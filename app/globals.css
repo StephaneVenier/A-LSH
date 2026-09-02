@@ -72,3 +72,81 @@ input {
   font-size: 0.875rem;
   line-height: 1.5;
 }
+
+/* Agenda controls stay readable even when utility classes are reordered. */
+.agenda-view-switch {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 0.25rem;
+  box-shadow: 0 4px 12px rgba(23, 48, 43, 0.08);
+}
+
+.agenda-view-tab {
+  display: inline-flex;
+  min-height: 2.75rem;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  padding: 0 0.75rem;
+  color: #173b33 !important;
+  background: transparent !important;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+  transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+.agenda-view-tab:hover {
+  background: #edf6ef !important;
+  color: #173b33 !important;
+}
+
+.agenda-view-tab-active,
+.agenda-view-tab-active:hover {
+  background: #173b33 !important;
+  color: #fff !important;
+  box-shadow: 0 2px 6px rgba(23, 59, 51, 0.28);
+}
+
+.agenda-view-tab:focus-visible,
+.agenda-primary-button:focus-visible {
+  outline: 3px solid #e4795f;
+  outline-offset: 2px;
+}
+
+.agenda-primary-button {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  background: #e4795f !important;
+  color: #fff !important;
+  padding: 0 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(228, 121, 95, 0.28);
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.agenda-primary-button:hover {
+  background: #bd563f !important;
+  color: #fff !important;
+  box-shadow: 0 14px 28px rgba(189, 86, 63, 0.3);
+  transform: translateY(-1px);
+}
+
+@media (min-width: 1024px) {
+  .agenda-view-switch {
+    width: auto;
+  }
+}
