@@ -1,0 +1,7 @@
+"use client";
+
+import { noteCategories } from "@/lib/notes/constants";
+
+export function NoteFilters({ search, category, pinned }: { search: string; category: string; pinned: boolean }) {
+  return <form action="/cahier" method="get" className="grid gap-3 rounded-3xl border border-[var(--line)] bg-white/75 p-3 sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-4"><label className="sr-only" htmlFor="note-search">Rechercher dans les notes</label><div className="relative"><input id="note-search" name="q" type="search" defaultValue={search} placeholder="Rechercher dans le titre ou le contenu…" className="field-input mt-0 pr-4" /></div><label className="sr-only" htmlFor="note-category">Filtrer par catégorie</label><select id="note-category" name="category" defaultValue={category} className="field-input mt-0 sm:w-52"><option value="">Toutes les catégories</option>{noteCategories.map((item) => <option key={item} value={item}>{item}</option>)}</select><label className="flex min-h-12 cursor-pointer items-center gap-2 rounded-2xl border border-[var(--line)] px-3 text-sm font-semibold text-[var(--ink)]"><input type="checkbox" name="pinned" value="1" defaultChecked={pinned} className="h-4 w-4 accent-[var(--coral)]" /> Épinglées</label><button type="submit" className="min-h-11 rounded-2xl bg-[var(--ink)] px-4 text-sm font-semibold text-white hover:bg-[var(--ink-soft)] sm:col-span-3 sm:w-fit sm:justify-self-end">Rechercher</button></form>;
+}
