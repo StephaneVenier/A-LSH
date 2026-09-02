@@ -7,7 +7,7 @@ import { Icon } from "./icons";
 const choices = [
   { label: "Note", href: "/cahier/nouvelle", disabled: false },
   { label: "Événement", disabled: true },
-  { label: "Tâche", disabled: true },
+    { label: "Tâche", href: "/taches/nouvelle", disabled: false },
   { label: "Suivi enfant", disabled: true },
 ] as const;
 
