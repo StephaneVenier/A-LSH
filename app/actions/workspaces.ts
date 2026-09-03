@@ -25,24 +25,31 @@ export async function createWorkspace(
     redirect("/connexion");
   }
 
-  const { data: existingMembership, error: membershipError } = await supabase
-    .from("workspace_members")
-    .select("workspace_id")
+  const { data: ownedWorkspace, error: workspaceError } = await supabase
+    .from("workspaces")
+    .select("id")
+    .eq("created_by", userData.user.id)
     .limit(1);
 
-  if (membershipError) {
+  if (workspaceError) {
     return {
       error: "Impossible de vérifier votre espace. Réessayez dans un instant.",
     };
   }
 
-  if (existingMembership.length > 0) {
+  if (ownedWorkspace.length > 0) {
     redirect("/tableau-de-bord");
   }
 
   const { error } = await supabase.rpc("create_workspace", {
     workspace_name: name,
   });
+
+  if (error?.code === "23505") {
+    return {
+      error: "Vous possédez déjà un espace de travail.",
+    };
+  }
 
   if (error) {
     return {
