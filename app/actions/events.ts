@@ -41,7 +41,7 @@ function validateEvent(formData: FormData) {
   if (!allDay && (!validTime(startTime) || !validTime(endTime))) return { error: "Un événement horaire doit avoir une heure de début et de fin valides." };
   if (!allDay && startDate === endDate && endTime <= startTime) return { error: "L’heure de fin doit être postérieure à l’heure de début." };
 
-  return { value: { title, description: description || null, location: location || null, category: category || null, color, start_date: startDate, start_time: allDay ? null : startTime.slice(0, 5), end_date: endDate, end_time: allDay ? null : endTime.slice(0, 5), is_all_day: allDay, visibility: "private" as const } };
+  return { value: { title, description, location, category: category || null, color, start_date: startDate, start_time: allDay ? null : startTime.slice(0, 5), end_date: endDate, end_time: allDay ? null : endTime.slice(0, 5), is_all_day: allDay, visibility: "private" as const } };
 }
 
 export async function createEvent(_previousState: EventActionState, formData: FormData): Promise<EventActionState> {
@@ -50,7 +50,15 @@ export async function createEvent(_previousState: EventActionState, formData: Fo
   if ("error" in validation) return { error: validation.error };
   const supabase = await createClient();
   const { error } = await supabase.from("events").insert({ ...validation.value, workspace_id: context.workspace.id, created_by: context.user.id });
-  if (error) return { error: "L’événement n’a pas pu être créé. Réessayez." };
+  if (error) {
+    console.error("[createEvent] Supabase INSERT failed", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    });
+    return { error: "L’événement n’a pas pu être créé. Réessayez." };
+  }
   revalidatePath("/agenda"); revalidatePath("/tableau-de-bord");
   redirect(`/agenda?date=${validation.value.start_date}&vue=jour&created=1`);
 }
@@ -73,7 +81,17 @@ export async function deleteEvent(formData: FormData) {
   const id = readText(formData, "id");
   if (!isUuid(id)) redirect("/agenda?error=delete");
   const supabase = await createClient();
-  const { error } = await supabase.from("events").delete().eq("id", id).eq("workspace_id", context.workspace.id);
-  if (error) redirect("/agenda?error=delete");
+  const { data, error } = await supabase.from("events").delete().eq("id", id).eq("workspace_id", context.workspace.id).select("id").maybeSingle();
+  if (error || !data) {
+    if (error) {
+      console.error("[deleteEvent] Supabase DELETE failed", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
+    }
+    redirect("/agenda?error=delete");
+  }
   revalidatePath("/agenda"); revalidatePath("/tableau-de-bord"); redirect("/agenda?deleted=1");
 }
