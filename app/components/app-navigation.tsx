@@ -11,6 +11,7 @@ const navigation = [
   { href: "/agenda", label: "Agenda", shortLabel: "Agenda", icon: "calendar" as const },
   { href: "/taches", label: "Tâches", shortLabel: "Tâches", icon: "tasks" as const },
   { href: "/suivi-enfants", label: "Suivi enfants", shortLabel: "Suivi", icon: "children" as const },
+  { href: "/suivi-anims", label: "Suivi anims", shortLabel: "Anims", icon: "children" as const },
   { href: "/sessions", label: "Sessions & vacances", shortLabel: "Sessions", icon: "sun" as const },
   { href: "/projets", label: "Projets", shortLabel: "Projets", icon: "projects" as const },
   { href: "/formations", label: "Formations", shortLabel: "Formations", icon: "training" as const },
