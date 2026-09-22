@@ -62,7 +62,7 @@ function validateTask(formData: FormData) {
   return {
     value: {
       title,
-      description: description || null,
+      description,
       category: category || null,
       priority,
       status,

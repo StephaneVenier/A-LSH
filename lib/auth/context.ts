@@ -24,6 +24,7 @@ export const getAuthContext = cache(async () => {
     supabase
       .from("workspace_members")
       .select("workspace_id, role, created_at, workspaces(id, name)")
+      .eq("user_id", userData.user.id)
       .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle(),
@@ -41,6 +42,10 @@ export const getAuthContext = cache(async () => {
   const workspace = Array.isArray(membership.workspaces)
     ? membership.workspaces[0]
     : membership.workspaces;
+
+  if (!workspace || workspace.id !== membership.workspace_id) {
+    return { user: userData.user, profile, workspace: null, role: null };
+  }
 
   return {
     user: userData.user,

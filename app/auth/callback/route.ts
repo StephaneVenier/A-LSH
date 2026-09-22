@@ -1,25 +1,26 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-function safeNextPath(value: string | null, applicationOrigin: string) {
+function safeNextUrl(value: string | null, applicationOrigin: string) {
+  const fallback = new URL("/", applicationOrigin);
   if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\") || /[\u0000-\u001f\u007f]/.test(value)) {
-    return "/";
+    return fallback;
   }
 
   try {
     const destination = new URL(value, applicationOrigin);
-    return destination.origin === applicationOrigin
-      ? `${destination.pathname}${destination.search}${destination.hash}`
-      : "/";
+    return destination.origin === applicationOrigin && !destination.pathname.startsWith("//")
+      ? destination
+      : fallback;
   } catch {
-    return "/";
+    return fallback;
   }
 }
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const nextPath = safeNextPath(url.searchParams.get("next"), url.origin);
+  const destination = safeNextUrl(url.searchParams.get("next"), url.origin);
 
   if (!code) {
     return NextResponse.redirect(new URL("/connexion?error=confirmation", url));
@@ -32,5 +33,5 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/connexion?error=confirmation", url));
   }
 
-  return NextResponse.redirect(new URL(nextPath, url));
+  return NextResponse.redirect(destination);
 }
