@@ -25,6 +25,7 @@
   --background: #f4f2eb;
   --foreground: #17302b;
   --ink: #17302b;
+  --green: var(--ink);
   --ink-soft: #315b50;
   --muted: #6b7a73;
   --line: #dfe6df;
@@ -52,6 +53,120 @@ body {
 button,
 input {
   font: inherit;
+}
+
+@layer components {
+  .button-primary,
+  .touch-target {
+    display: inline-flex;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .button-primary {
+    min-height: 3rem;
+    border-radius: 1rem;
+    background: var(--ink);
+    padding: 0.75rem 1.25rem;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-align: center;
+    transition: background-color 150ms ease;
+  }
+
+  .button-primary:hover {
+    background: var(--ink-soft);
+  }
+
+  .button-primary:focus-visible,
+  .touch-target:focus-visible {
+    outline: 2px solid var(--coral-dark);
+    outline-offset: 2px;
+  }
+
+  .page-title {
+    margin-top: 0.75rem;
+    color: var(--ink);
+    font-size: 1.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.05em;
+    overflow-wrap: anywhere;
+  }
+
+  .page-subtitle {
+    margin-top: 0.75rem;
+    max-width: 42rem;
+    color: var(--ink-soft);
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+  }
+
+  .eyebrow,
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+
+  .eyebrow {
+    color: var(--coral-dark);
+    letter-spacing: 0.2em;
+  }
+
+  .section-title {
+    color: var(--ink-soft);
+    letter-spacing: 0.14em;
+  }
+
+  .empty-state {
+    display: flex;
+    min-height: 18rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px dashed var(--line);
+    border-radius: 2rem;
+    background: rgb(255 255 255 / 55%);
+    padding: 2rem 1.5rem;
+    color: var(--ink-soft);
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    text-align: center;
+  }
+
+  .field-help {
+    margin-top: 0.5rem;
+    color: var(--ink-soft);
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .page-title {
+      font-size: 3rem;
+    }
+
+    .page-subtitle {
+      font-size: 1rem;
+    }
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[fade-in_500ms_ease-out\] {
+    animation: none;
+  }
 }
 
 .field-label {
