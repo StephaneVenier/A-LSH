@@ -14,6 +14,8 @@ export type NoteRecord = {
   id: string;
   title: string;
   content: string;
+  content_json: unknown;
+  content_version: number;
   category: string | null;
   occurred_at: string | null;
   visibility: string;

@@ -27,7 +27,7 @@ export default async function NotesSectionPage({
   const supabase = await createClient();
   let notesQuery = supabase
     .from("notes")
-    .select("section, id, title, content, category, occurred_at, visibility, is_pinned, created_at, updated_at")
+    .select("section, id, title, content, content_json, content_version, category, occurred_at, visibility, is_pinned, created_at, updated_at")
     .eq("workspace_id", context.workspace.id)
     .eq("created_by", context.user.id)
     .eq("section", section)

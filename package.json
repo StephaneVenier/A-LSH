@@ -11,6 +11,18 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.114.0",
+    "@tiptap/core": "3.31.3",
+    "@tiptap/extension-bold": "3.31.3",
+    "@tiptap/extension-document": "3.31.3",
+    "@tiptap/extension-highlight": "3.31.3",
+    "@tiptap/extension-italic": "3.31.3",
+    "@tiptap/extension-list": "3.31.3",
+    "@tiptap/extension-paragraph": "3.31.3",
+    "@tiptap/extension-text": "3.31.3",
+    "@tiptap/extension-text-style": "3.31.3",
+    "@tiptap/extension-underline": "3.31.3",
+    "@tiptap/pm": "3.31.3",
+    "@tiptap/react": "3.31.3",
     "next": "16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8"

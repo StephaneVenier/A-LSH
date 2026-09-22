@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isNoteCategory } from "@/lib/notes/constants";
 import { isNoteSection, noteSections, sectionInfo } from "@/lib/notes/sections";
 import { requireWorkspaceContext } from "@/lib/auth/context";
+import { CONTENT_VERSION, parseRichContent, richContentToText } from "@/lib/notes/rich-content";
 
 export type NoteActionState = {
   error?: string;
@@ -13,10 +14,6 @@ export type NoteActionState = {
 
 function readText(formData: FormData, name: string) {
   return String(formData.get(name) ?? "").trim();
-}
-
-function readContent(formData: FormData) {
-  return String(formData.get("content") ?? "");
 }
 
 function readPinned(formData: FormData) {
@@ -46,7 +43,13 @@ function readOccurredAt(formData: FormData) {
 
 function validateNote(formData: FormData) {
   const title = readText(formData, "title");
-  const content = readContent(formData);
+  let contentJson;
+  try {
+    contentJson = parseRichContent(formData.get("contentJson"));
+  } catch {
+    return { error: "Le contenu ou sa mise en forme n’est pas valide. Simplifiez la note et réessayez." };
+  }
+  const content = richContentToText(contentJson);
   const category = readText(formData, "category");
   const occurredAt = readOccurredAt(formData);
 
@@ -68,6 +71,8 @@ function validateNote(formData: FormData) {
     value: {
       title,
       content,
+      content_json: contentJson,
+      content_version: CONTENT_VERSION,
       category: category || null,
       occurred_at: occurredAt.value,
       is_pinned: readPinned(formData),

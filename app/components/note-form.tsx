@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { sectionInfo } from "@/lib/notes/sections";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { createNote, updateNote, type NoteActionState } from "@/app/actions/notes";
 import { formatDateTimeLocal, noteCategories, type NoteRecord } from "@/lib/notes/constants";
 import { SubmitButton } from "./submit-button";
+import { NoteEditor } from "./note-editor";
 
 const initialState: NoteActionState = {};
 
@@ -13,6 +14,7 @@ export function NoteForm({ note }: { note?: NoteRecord }) {
   const action = note ? updateNote : createNote;
   const [state, formAction] = useActionState(action, initialState);
   const timezoneRef = useRef<HTMLInputElement>(null);
+  const [editorReady, setEditorReady] = useState(false);
 
   useEffect(() => {
     if (timezoneRef.current) {
@@ -29,8 +31,8 @@ export function NoteForm({ note }: { note?: NoteRecord }) {
         <input id="title" name="title" type="text" required maxLength={200} defaultValue={note?.title} placeholder="Ex. Transmission importante" className="field-input" />
       </div>
       <div>
-        <label htmlFor="content" className="field-label">Contenu</label>
-        <textarea id="content" name="content" rows={8} maxLength={100000} defaultValue={note?.content} placeholder="Écrivez les éléments à garder en tête…" className="field-input min-h-48 resize-y" />
+        <p id="note-content-label" className="field-label">Contenu</p>
+        <NoteEditor content={note?.content ?? ""} json={note?.content_json ?? null} version={note?.content_version ?? 1} onReadyChange={setEditorReady} />
       </div>
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
@@ -52,7 +54,7 @@ export function NoteForm({ note }: { note?: NoteRecord }) {
       {state.error ? <p className="form-error" role="alert">{state.error}</p> : null}
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <Link href={sectionInfo[note?.section ?? "notebook"].path} className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--line)] px-5 text-sm font-semibold text-[var(--ink)] hover:bg-[var(--background)]">Annuler</Link>
-        <div className="sm:min-w-44"><SubmitButton pendingLabel={note ? "Enregistrement…" : "Création…"}>{note ? "Enregistrer" : "Créer la note"}</SubmitButton></div>
+        <fieldset disabled={!editorReady} className="sm:min-w-44"><SubmitButton pendingLabel={note ? "Enregistrement…" : "Création…"}>{note ? "Enregistrer" : "Créer la note"}</SubmitButton></fieldset>
       </div>
     </form>
   );

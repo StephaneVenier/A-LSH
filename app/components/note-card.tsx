@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MoveNoteForm } from "./move-note-form";
 import { DeleteNoteForm } from "./delete-note-form";
 import { formatNoteDate, type NoteRecord } from "@/lib/notes/constants";
+import { NoteRichContent } from "./note-rich-content";
 
 export function NoteCard({ note, featured = false }: { note: NoteRecord; featured?: boolean }) {
   return (
@@ -14,7 +15,7 @@ export function NoteCard({ note, featured = false }: { note: NoteRecord; feature
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-1"><Link href={`/cahier/${note.id}/modifier`} className="rounded-xl px-2.5 py-2 text-xs font-semibold text-[var(--ink-soft)] hover:bg-[var(--mint-pale)]">Modifier</Link><DeleteNoteForm id={note.id} /></div>
       </div>
-      <details className="group mt-4 border-t border-[var(--line)] pt-3"><summary className="cursor-pointer list-none text-xs font-semibold text-[var(--ink-soft)] underline-offset-4 hover:underline [&::-webkit-details-marker]:hidden"><span className="group-open:hidden">Afficher le contenu</span><span className="hidden group-open:inline">Masquer le contenu</span></summary><p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-[var(--muted)]">{note.content || "Aucun contenu dans cette note."}</p></details>
+      <details className="group mt-4 border-t border-[var(--line)] pt-3"><summary className="cursor-pointer list-none text-xs font-semibold text-[var(--ink-soft)] underline-offset-4 hover:underline [&::-webkit-details-marker]:hidden"><span className="group-open:hidden">Afficher le contenu</span><span className="hidden group-open:inline">Masquer le contenu</span></summary><div className="mt-3"><NoteRichContent content={note.content} json={note.content_json} version={note.content_version} /></div></details>
       <MoveNoteForm id={note.id} section={note.section} />
     </article>
   );

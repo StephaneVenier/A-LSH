@@ -10,7 +10,7 @@ export default async function EditNotePage({ params }: { params: Promise<{ id: s
   const context = await requireWorkspaceContext();
   const { id } = await params;
   const supabase = await createClient();
-  const { data, error } = await supabase.from("notes").select("section, id, title, content, category, occurred_at, visibility, is_pinned, created_at, updated_at").eq("id", id).eq("workspace_id", context.workspace.id).maybeSingle();
+  const { data, error } = await supabase.from("notes").select("section, id, title, content, content_json, content_version, category, occurred_at, visibility, is_pinned, created_at, updated_at").eq("id", id).eq("workspace_id", context.workspace.id).maybeSingle();
 
   if (error || !data || !isNoteSection(data.section)) notFound();
 
