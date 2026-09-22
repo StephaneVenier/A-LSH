@@ -10,6 +10,7 @@ export const noteCategories = [
 export type NoteCategory = (typeof noteCategories)[number];
 
 export type NoteRecord = {
+  section: import('./sections').NoteSection;
   id: string;
   title: string;
   content: string;

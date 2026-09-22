@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { sectionInfo } from "@/lib/notes/sections";
 import { useActionState, useEffect, useRef } from "react";
 import { createNote, updateNote, type NoteActionState } from "@/app/actions/notes";
 import { formatDateTimeLocal, noteCategories, type NoteRecord } from "@/lib/notes/constants";
@@ -50,7 +51,7 @@ export function NoteForm({ note }: { note?: NoteRecord }) {
       <div className="flex items-start gap-3 rounded-2xl border border-[var(--mint)] bg-[var(--mint-pale)] px-4 py-3 text-sm leading-5 text-[var(--ink-soft)]"><span aria-hidden="true">🔒</span><p><strong>Cette note est privée.</strong><br />Elle est visible uniquement par vous.</p></div>
       {state.error ? <p className="form-error" role="alert">{state.error}</p> : null}
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Link href="/cahier" className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--line)] px-5 text-sm font-semibold text-[var(--ink)] hover:bg-[var(--background)]">Annuler</Link>
+        <Link href={sectionInfo[note?.section ?? "notebook"].path} className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[var(--line)] px-5 text-sm font-semibold text-[var(--ink)] hover:bg-[var(--background)]">Annuler</Link>
         <div className="sm:min-w-44"><SubmitButton pendingLabel={note ? "Enregistrement…" : "Création…"}>{note ? "Enregistrer" : "Créer la note"}</SubmitButton></div>
       </div>
     </form>

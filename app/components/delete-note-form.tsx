@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteNote } from "@/app/actions/notes";
+import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 
 function DeleteButton() {
@@ -9,5 +10,6 @@ function DeleteButton() {
 }
 
 export function DeleteNoteForm({ id }: { id: string }) {
-  return <form action={deleteNote} onSubmit={(event) => { if (!window.confirm("Supprimer définitivement cette note ? Cette action est irréversible.")) event.preventDefault(); }}><input type="hidden" name="id" value={id} /><DeleteButton /></form>;
+  const [state, action] = useActionState(deleteNote, {});
+  return <form action={action} onSubmit={(event) => { if (!window.confirm("Supprimer définitivement cette note ? Cette action est irréversible.")) event.preventDefault(); }}><input type="hidden" name="id" value={id} /><DeleteButton />{state.error ? <p role="alert" className="form-error">{state.error}</p> : null}</form>;
 }

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isNoteCategory } from "@/lib/notes/constants";
+import { isNoteSection, noteSections, sectionInfo } from "@/lib/notes/sections";
 import { requireWorkspaceContext } from "@/lib/auth/context";
 
 export type NoteActionState = {
@@ -119,33 +120,77 @@ export async function updateNote(
     .update(validation.value)
     .eq("id", id)
     .eq("workspace_id", context.workspace.id)
-    .select("id")
+    .eq("created_by", context.user.id)
+    .select("id, section")
     .maybeSingle();
 
-  if (error || !data) {
+  if (error || !data || !isNoteSection(data.section)) {
     return { error: "La note n’a pas pu être modifiée ou n’est plus accessible." };
   }
 
-  revalidatePath("/cahier");
+  revalidateNoteLists();
   revalidatePath(`/cahier/${id}/modifier`);
-  redirect("/cahier?updated=1");
+  redirect(`${sectionInfo[data.section].path}?updated=1`);
 }
 
-export async function deleteNote(formData: FormData) {
+function revalidateNoteLists() {
+  for (const section of noteSections) revalidatePath(sectionInfo[section].path);
+}
+
+export async function deleteNote(
+  _previousState: NoteActionState,
+  formData: FormData,
+): Promise<NoteActionState> {
   const context = await requireWorkspaceContext();
   const id = readText(formData, "id");
-
-  if (!isUuid(id)) redirect("/cahier?error=delete");
+  if (!isUuid(id)) return { error: "Cette note n’est pas reconnue." };
 
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("notes")
-    .delete()
+  const { data, error } = await supabase.from("notes").delete()
     .eq("id", id)
-    .eq("workspace_id", context.workspace.id);
+    .eq("workspace_id", context.workspace.id)
+    .eq("created_by", context.user.id)
+    .select("section").maybeSingle();
+  if (error || !data || !isNoteSection(data.section)) {
+    return { error: "La note n’a pas pu être supprimée ou n’est plus accessible." };
+  }
 
-  if (error) redirect("/cahier?error=delete");
+  revalidateNoteLists();
+  revalidatePath(`/cahier/${id}/modifier`);
+  redirect(`${sectionInfo[data.section].path}?deleted=1`);
+}
 
-  revalidatePath("/cahier");
-  redirect("/cahier?deleted=1");
+export async function moveNote(
+  _previousState: NoteActionState,
+  formData: FormData,
+): Promise<NoteActionState> {
+  const context = await requireWorkspaceContext();
+  const id = readText(formData, "id");
+  const destination = formData.get("destination");
+  if (!isUuid(id)) return { error: "Cette note n’est pas reconnue." };
+  if (!isNoteSection(destination)) return { error: "Choisissez une rubrique valide." };
+
+  const supabase = await createClient();
+  const { data: note, error: readError } = await supabase.from("notes")
+    .select("section").eq("id", id)
+    .eq("workspace_id", context.workspace.id)
+    .eq("created_by", context.user.id).maybeSingle();
+  if (readError || !note || !isNoteSection(note.section)) {
+    return { error: "Cette note n’est plus accessible." };
+  }
+  if (note.section === destination) return { error: "La note est déjà dans cette rubrique." };
+
+  // Only section is written; the source predicate detects concurrent moves.
+  const { data, error } = await supabase.from("notes")
+    .update({ section: destination }).eq("id", id)
+    .eq("workspace_id", context.workspace.id)
+    .eq("created_by", context.user.id)
+    .eq("section", note.section).select("id").maybeSingle();
+  if (error || !data) {
+    return { error: "Le déplacement a échoué ou la note a changé. Actualisez puis réessayez." };
+  }
+
+  revalidateNoteLists();
+  revalidatePath(`/cahier/${id}/modifier`);
+  redirect(`${sectionInfo[note.section].path}?moved=1`);
 }

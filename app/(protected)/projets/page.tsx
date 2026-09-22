@@ -1,7 +1,7 @@
-import { ModuleEmptyState } from "@/app/components/module-empty-state";
-import { requireWorkspaceContext } from "@/lib/auth/context";
+import NotesSectionPage from "@/app/components/notes-section-page";
 
-export default async function ProjectsPage() {
-  await requireWorkspaceContext();
-  return <ModuleEmptyState title="Projets" description="Faites grandir les idées et les projets de votre structure." icon="projects" />;
+export default function Page({ searchParams }: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  return <NotesSectionPage section="project" searchParams={searchParams} />;
 }
